@@ -3,7 +3,7 @@ var usbConnector = require('./usbConnector');
 
 var JOB_NAME = 'DevCI_iterative';
 var SUCCESS_STATUS = 'SUCCESS';
-var JENKINS_URL = 'http://epbygrow0110.grodno.epam.com:8080/jenkins/';
+var JENKINS_URL = process.env.JENKINS_URL;
 
 var jenkins = jenkinsapi.init(JENKINS_URL);
 
