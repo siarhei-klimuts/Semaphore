@@ -26,23 +26,25 @@ PROGMEM const char usbHidReportDescriptor[22] = { // USB report descriptor
     0xc0                                    // END_COLLECTION
 };
 
-uint8_t status = 0;
+uint8_t status = 1;
 
 USB_PUBLIC uchar usbFunctionSetup(uchar data[8]) {
 	usbRequest_t *rq = (void *)data; // cast data to correct type
 	status = rq->wValue.bytes[0];
+    PORTD &=~ ((1 << PD5) | (1 << PD4));
+    PORTB &=~ ((1 << PD2) | (1 << PD3));
 	return 0;
 }
 
 int main(void) {
-    DDRD = 0x20;
-    uchar i;
+    DDRD = 0x30;
+    DDRB = 0xC;
 
 	wdt_enable(WDTO_1S);
 	usbInit();
 	usbDeviceDisconnect();
 
-	for(i = 0; i<250; i++) { // wait 500 ms
+	for(uchar i = 0; i<250; i++) { // wait 500 ms
 		wdt_reset();
 		_delay_ms(2);
 	}
@@ -51,25 +53,74 @@ int main(void) {
 
 	sei();
 
-	int8_t delay = 0;
+	int16_t delay = 0;
+	uint8_t pin = PD5;
+	uint8_t isBlink = 0;
 
 	while(1) {
 		wdt_reset();
 		usbPoll();
 
-		if(status == 1) {
-			PORTD |= (1 << PD5);
-		} else if(status == 2) {
-			delay++;
-			if(delay == 1) {
-				PORTD |= (1 << PD5);
-			} else if(delay == 100) {
-				PORTD &=~(1 << PD5);
-			} else if(delay == 200) {
-				delay = 0;
+		switch (status) {
+			case 1:
+				pin = PD5;
+				isBlink = 0;
+				break;
+			case 2:
+				pin = PD5;
+				isBlink = 1;
+				break;
+			case 3:
+				pin = PD4;
+				isBlink = 0;
+				break;
+			case 4:
+				pin = PD4;
+				isBlink = 1;
+				break;
+			case 5:
+				pin = PB2;
+				isBlink = 0;
+				break;
+			case 6:
+				pin = PB2;
+				isBlink = 1;
+				break;
+			case 7:
+				pin = PB3;
+				isBlink = 0;
+				break;
+			case 8:
+				pin = PB3;
+				isBlink = 1;
+				break;
+		}
+
+		if(isBlink == 0) {
+			if(status < 5) {
+				PORTD |= (1 << pin);
+			} else {
+				PORTB |= (1 << pin);
 			}
 		} else {
-			PORTD &=~(1 << PD5);
+			delay++;
+			if(delay > 200) {
+				delay = -200;
+			}
+
+			if(delay < 0) {
+				if(status < 5) {
+					PORTD |= (1 << pin);
+				} else {
+					PORTB |= (1 << pin);
+				}
+			} else {
+				if(status < 5) {
+					PORTD &=~ (1 << pin);
+				} else {
+					PORTB &=~ (1 << pin);
+				}
+			}
 		}
 
 		_delay_ms(2);
