@@ -12,6 +12,7 @@ interf = device.interface(0);
 interf.claim();
 
 exports.FAIL_STATUS = FAIL_STATUS;
+exports.PROGRESS_STATUS = PROGRESS_STATUS;
 exports.SUCCESS_STATUS = SUCCESS_STATUS;
 
 exports.sendStatus = function(status){
