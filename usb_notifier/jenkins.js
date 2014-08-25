@@ -4,14 +4,15 @@ var usbConnector = require('./usbConnector');
 var JOB_NAME = 'DevCI_iterative';
 var SUCCESS_STATUS = 'SUCCESS';
 var PROGRESS_STATUS = null;
-var FAIL_STATUS = 'ERROR';
+var FAIL_STATUS = 'FAILURE';
 var JENKINS_URL = process.env.JENKINS_URL;
 
 var jenkins = jenkinsapi.init(JENKINS_URL);
 
 exports.checkStatus = function checkStatus(){
 	jenkins.last_build_info(JOB_NAME, function(err, data){
- 		console.log('Staus = ', data.result);
+		var now = new Date();
+ 		console.log('Staus = ', data.result, now.toLocaleTimeString());
  		
  	 	if(data.result == SUCCESS_STATUS){
  	 		usbConnector.sendStatus(usbConnector.SUCCESS_STATUS);
