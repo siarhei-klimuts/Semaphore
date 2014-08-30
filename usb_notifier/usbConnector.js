@@ -1,8 +1,8 @@
 var usb = require('usb');
 
-var FAIL_STATUS = 7;
-var PROGRESS_STATUS = 6;
-var SUCCESS_STATUS = 3;
+var FAIL_STATUS = 30;
+var PROGRESS_STATUS = 21;
+var SUCCESS_STATUS = 40;
 
 var device = usb.findByIds(5824, 1500);
 var interf;
