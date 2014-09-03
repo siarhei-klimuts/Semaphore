@@ -1,13 +1,8 @@
 var usb = require('usb');
 
-var FAIL_STATUS = 30;
-var PROGRESS_STATUS = 21;
-var SUCCESS_STATUS = 40;
-
-
-exports.FAIL_STATUS = FAIL_STATUS;
-exports.PROGRESS_STATUS = PROGRESS_STATUS;
-exports.SUCCESS_STATUS = SUCCESS_STATUS;
+exports.FAIL_STATUS = 30;
+exports.PROGRESS_STATUS = 21;
+exports.SUCCESS_STATUS = 40;
 
 exports.sendStatus = function(status, done){
 	var interf;
