@@ -1,14 +1,13 @@
 {
   "name": "Semaphore",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node observer.js"
   },
   "dependencies": {
     "usb": "~0.3.11",
-    "jenkins-api": "~0.2.3",
-    "node-schedule": "~0.1.13"
+    "jenkins-api": "~0.2.3"
   },
   "engines": {
     "node": "0.10.x"
