@@ -3,7 +3,12 @@ Semaphore
 
 Another build state indication project
 
+Circuit
+=========
+![Circuit](/usb_circuit/semaphore_circuit.png "Circuit")
 
+Images
+=========
 ![Complete](/images/IMG_20140908_161912.jpg "Complete")
 ![Inside](/images/IMG_20140812_172111.jpg "Inside")
 ![Circuit up](/images/IMG_20140901_103015.jpg "Circuit up")
