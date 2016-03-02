@@ -1,5 +1,6 @@
 var jenkinsapi = require('jenkins-api');
 var usbConnector = require('./usbConnector');
+var config = require('./config.js');
 
 var STATUS_MAPPING = {
 	'SUCCESS': usbConnector.SUCCESS_STATUS,
@@ -8,8 +9,7 @@ var STATUS_MAPPING = {
 };
 
 var JOB_NAME = 'DevCI_iterative';
-var JENKINS_URL = process.env.JENKINS_URL;
-var jenkins = jenkinsapi.init(JENKINS_URL);
+var jenkins = jenkinsapi.init(config.JENKINS_URL);
 
 var previousStatus;
 
@@ -17,6 +17,7 @@ exports.checkStatus = function checkStatus(){
 	jenkins.last_build_info(JOB_NAME, function(err, data){
 		var usbStatus;
 		var now = new Date();
+		
  		if(data.result !== previousStatus) {
 	 	 	usbConnector.sendStatus(STATUS_MAPPING[data.result], function (error, result) {
 	 	 		if(!error) {
