@@ -11,6 +11,7 @@ import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
 public class UsbService {
+	public static final short EXCEPTION_STATUS = 31;
 	public static final short FAIL_STATUS = 30;
 	public static final short PROGRESS_STATUS = 21;
 	public static final short SUCCESS_STATUS = 40;
@@ -24,6 +25,8 @@ public class UsbService {
 	private Context context;
 	private Device device;
 	
+	private short lastStatus;
+	
 	public void connect() {
 		context = new Context();
 		int result = LibUsb.init(context);
@@ -36,8 +39,15 @@ public class UsbService {
 		LibUsb.exit(context);
 	}
 	
-	public void sendStatus(short status) {
-		send(device, status);
+	public boolean sendStatus(short status) {
+		if (status != lastStatus) {
+			lastStatus = status;
+			send(device, status);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private static Device findDevice(int vendorId, int productId) {

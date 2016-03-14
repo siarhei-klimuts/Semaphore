@@ -21,15 +21,11 @@ public class JenkinsService {
 		jenkins = new JenkinsServer(new URI(Config.getJenkinsUrl()), Config.getJenkinsLogin(), Config.getJenkinsPassword());
 	}
 	
-	public String getStatus() {
+	public String getStatus() throws IOException {
 		BuildResult result = null;
 		
-		try {
-			JobWithDetails job = jenkins.getJobs().get(JOB_NAME).details();
-			result = job.getLastBuild().details().getResult();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		JobWithDetails job = jenkins.getJobs().get(JOB_NAME).details();
+		result = job.getLastBuild().details().getResult();
 		
 		return getStatusFromResult(result);
 	}

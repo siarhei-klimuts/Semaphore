@@ -1,6 +1,5 @@
 package com.github.galiaf47.semaphore;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,8 @@ public class Config {
 		prop = new Properties();
 		
 		try {
-			input = new FileInputStream(FILE_NAME);
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			input = loader.getResourceAsStream(FILE_NAME);
 			prop.load(input);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

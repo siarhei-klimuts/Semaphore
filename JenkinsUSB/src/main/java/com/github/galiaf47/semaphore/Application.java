@@ -1,5 +1,6 @@
 package com.github.galiaf47.semaphore;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,18 +16,23 @@ public class Application {
 
 	private UsbService usb;
 	private JenkinsService jenkins;
-	private short currentStatus;
 	
-	public Application() throws URISyntaxException {
+	public Application() {
 		usb = new UsbService();
 		jenkins = new JenkinsService();
 		
 		usb.connect();
-		jenkins.connect();
+		
+		try {
+			jenkins.connect();
+		} catch (URISyntaxException e) {
+			logException(e);
+		}
 	}
 	
-	public static void main(String[] args) throws URISyntaxException {
+	public static void main(String[] args) {
 		Application app = new Application();
+		
 		while (true) {
 			app.update();
 			
@@ -39,14 +45,24 @@ public class Application {
 	}
 	
 	private void update() {
-		String buildStatus = jenkins.getStatus();
+		String buildStatus = null;
+		
+		try {
+			buildStatus = jenkins.getStatus();
+		} catch (IOException e) {
+			logException(e);
+		}
+		
 		if (buildStatus == null) return;
 		
 		short usbStatus = statusMap.get(buildStatus);
-		if (usbStatus != currentStatus) {
-			usb.sendStatus(usbStatus);
-			currentStatus = usbStatus;
+		if (usb.sendStatus(usbStatus)) {
 			System.out.println(new java.util.Date() + ": " + buildStatus);
 		}
+	}
+	
+	private void logException(Exception e) {
+		usb.sendStatus(UsbService.EXCEPTION_STATUS);
+		e.printStackTrace();
 	}
 }

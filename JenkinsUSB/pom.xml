@@ -1,9 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.galiaf47.semaphore</groupId>
-  <artifactId>jenkins-usb</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.galiaf47.semaphore</groupId>
+	<artifactId>jenkins-usb</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>JenkinsUSB</name>
+	
 	<dependencies>
 	  <dependency>
 		<groupId>org.usb4java</groupId>
@@ -16,4 +18,75 @@
 		<version>0.3.3</version>
 	  </dependency>
 	</dependencies>
+	
+	<build>
+		<finalName>jenkins-usb</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+				    <excludes>
+				      <exclude>**/*.properties</exclude>
+				    </excludes>
+					<archive>
+					  <manifest>
+						<addClasspath>true</addClasspath>
+						<classpathPrefix>lib/</classpathPrefix>
+						<mainClass>com.github.galiaf47.semaphore.Application</mainClass>
+					  </manifest>
+				      <manifestEntries>
+				        <Class-Path>conf/</Class-Path>
+				      </manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+				  <execution>
+					<id>copy-dependencies</id>
+					<phase>package</phase>
+					<goals>
+						<goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<includeScope>runtime</includeScope>
+						<outputDirectory>${project.build.directory}/lib/</outputDirectory>
+						<overWriteReleases>false</overWriteReleases>
+						<overWriteSnapshots>false</overWriteSnapshots>
+						<overWriteIfNewer>true</overWriteIfNewer>
+					</configuration>
+				  </execution>
+				</executions>
+			</plugin>
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-resources-plugin</artifactId>
+			  <version>2.4</version>
+			  <executions>
+			    <execution>
+			      <id>copy-resources</id>
+			      <phase>install</phase>
+			      <goals>
+			        <goal>copy-resources</goal>
+			      </goals>
+			      <configuration>
+			        <outputDirectory>${basedir}/target/conf</outputDirectory>
+			        <resources>
+			          <resource>
+			            <directory>src/main/resources</directory>
+			            <includes>
+			              <include>**/*.properties</include>
+			            </includes>
+			          </resource>
+			        </resources>
+			      </configuration>
+			    </execution>
+			  </executions>
+			</plugin>			
+		</plugins>
+	</build>
 </project>
