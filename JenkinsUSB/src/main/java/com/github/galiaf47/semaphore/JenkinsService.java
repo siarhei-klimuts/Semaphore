@@ -24,7 +24,7 @@ public class JenkinsService {
 	public String getStatus() throws IOException {
 		BuildResult result = null;
 		
-		JobWithDetails job = jenkins.getJobs().get(JOB_NAME).details();
+		JobWithDetails job = jenkins.getJob(JOB_NAME).details();
 		result = job.getLastBuild().details().getResult();
 		
 		return getStatusFromResult(result);
