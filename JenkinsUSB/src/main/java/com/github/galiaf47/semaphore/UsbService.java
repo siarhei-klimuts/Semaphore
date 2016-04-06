@@ -11,11 +11,6 @@ import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
 public class UsbService {
-	public static final short EXCEPTION_STATUS = 31;
-	public static final short FAIL_STATUS = 30;
-	public static final short PROGRESS_STATUS = 21;
-	public static final short SUCCESS_STATUS = 40;
-	
 	private static final byte BM_REQUEST_TYPE = (LibUsb.REQUEST_TYPE_CLASS | LibUsb.RECIPIENT_INTERFACE);
 	private static final byte B_REQUEST  = 0x09;
 	private static final short W_INDEX  = 1;
@@ -28,14 +23,20 @@ public class UsbService {
 	private short lastStatus;
 	
 	public void connect() {
+		if (!Config.USB_ENABLED) return;
+		
 		context = new Context();
 		int result = LibUsb.init(context);
 		if (result != LibUsb.SUCCESS) throw new LibUsbException("Unable to initialize libusb.", result);
 		
 		device = findDevice(5824, 1500);
+		send(device, Config.USB_STATUS_CONNECTED);
 	}
 	
 	public void disconnect() {
+		if (!Config.USB_ENABLED) return;
+		
+		send(device, Config.USB_STATUS_DISCONNECTED);
 		LibUsb.exit(context);
 	}
 	
@@ -78,6 +79,8 @@ public class UsbService {
 	}
 	
 	private static void send(Device device, short status) {
+		if (!Config.USB_ENABLED) return;
+		
 		DeviceHandle handle = new DeviceHandle();
 		int openResult = LibUsb.open(device, handle);
 		

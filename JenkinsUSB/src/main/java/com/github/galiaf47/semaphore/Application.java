@@ -2,24 +2,18 @@ package com.github.galiaf47.semaphore;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Application {
 	private static final long INTERVAL = 1000;
-	private static final Map<String, Short> statusMap = new HashMap<String, Short>();
-	static {
-		statusMap.put(JenkinsService.STATUS_PENDING, UsbService.PROGRESS_STATUS);
-		statusMap.put(JenkinsService.STATUS_SUCCESS, UsbService.SUCCESS_STATUS);
-		statusMap.put(JenkinsService.STATUS_FAILURE, UsbService.FAIL_STATUS);
-	}
 
 	private UsbService usb;
 	private JenkinsService jenkins;
+	private Tray tray;
 	
 	public Application() {
 		usb = new UsbService();
 		jenkins = new JenkinsService();
+		tray = new Tray();
 		
 		usb.connect();
 		
@@ -30,10 +24,20 @@ public class Application {
 		}
 	}
 	
+	public void exit() {
+		usb.disconnect();
+		jenkins.disconnect();
+		tray.remove();
+	}
+	
+	public boolean isRunning() {
+		return !tray.isExit();
+	}
+	
 	public static void main(String[] args) {
 		Application app = new Application();
 		
-		while (true) {
+		while (app.isRunning()) {
 			app.update();
 			
 			try {
@@ -42,6 +46,8 @@ public class Application {
 				e.printStackTrace();
 			}
 		}
+		
+		app.exit();
 	}
 	
 	private void update() {
@@ -55,14 +61,17 @@ public class Application {
 		
 		if (buildStatus == null) return;
 		
-		short usbStatus = statusMap.get(buildStatus);
+		short usbStatus = Config.getUSBCode(buildStatus);
 		if (usb.sendStatus(usbStatus)) {
+			tray.setStatus(buildStatus);
 			System.out.println(new java.util.Date() + ": " + buildStatus);
 		}
 	}
 	
 	private void logException(Exception e) {
-		usb.sendStatus(UsbService.EXCEPTION_STATUS);
+		usb.sendStatus(Config.USB_STATUS_EXCEPTION);
+		tray.setError(e.getMessage());
+		
 		e.printStackTrace();
 	}
 }
